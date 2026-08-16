@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Área restrita · Blog Multimídia e Hipermídia</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <style>
+    .escondido { display: none !important; }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <a href="/" class="logo">multimidia<span>.</span>blog</a>
+      <nav class="main-nav">
+        <a href="/index.html">Início</a>
+        <a href="/posts.html">Posts</a>
+        <a href="/sobre.html">Sobre</a>
+        <button id="btn-sair" class="btn btn-outline" style="display:none">Sair</button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- TELA DE LOGIN -->
+  <section id="tela-login" class="wrap login-wrap">
+    <div class="form-card">
+      <span class="eyebrow">Área restrita</span>
+      <h1 style="margin: 0.75rem 0 0.5rem; font-size: 1.8rem">Ei, só vocês duas por aqui 👋</h1>
+      <p style="color:#5a6489; margin-bottom: 1.5rem">Digita a senha combinada entre Maria Eduarda e Júlia pra entrar.</p>
+      <form id="form-login">
+        <div class="field">
+          <label for="campo-senha">Senha</label>
+          <input type="password" id="campo-senha" required autofocus />
+        </div>
+        <button type="submit" class="btn btn-primary">Entrar</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- TELA DE LISTA DE POSTS -->
+  <section id="tela-lista" class="wrap escondido" style="padding-top: 2.5rem">
+    <div class="top-bar">
+      <div>
+        <span class="eyebrow">Área restrita</span>
+        <h1 style="margin: 0.5rem 0 0; font-size: 1.9rem">Gerenciar posts</h1>
+      </div>
+      <button id="btn-novo-post" class="btn btn-primary">+ Novo post</button>
+    </div>
+    <div id="lista-posts" class="admin-posts-list">Carregando...</div>
+  </section>
+
+  <!-- TELA DE FORMULÁRIO (criar/editar) -->
+  <section id="tela-form" class="wrap escondido" style="padding-top: 2.5rem; padding-bottom: 4rem">
+    <div class="top-bar">
+      <h1 id="titulo-form" style="font-size: 1.7rem; margin:0">Novo post</h1>
+      <button id="btn-cancelar-form" class="btn btn-outline">← Voltar pra lista</button>
+    </div>
+
+    <form id="form-post" class="form-card" style="max-width: 100%">
+      <div class="field">
+        <label for="campo-titulo">Título</label>
+        <input type="text" id="campo-titulo" name="titulo" required />
+      </div>
+
+      <div class="field">
+        <label for="campo-slug">Slug (parte da URL, sem espaços)</label>
+        <input type="text" id="campo-slug" name="slug" required pattern="[a-z0-9\-]+" placeholder="ex: nosso-primeiro-projeto" />
+        <small>Só letras minúsculas, números e hífen. Isso vira o endereço do post.</small>
+      </div>
+
+      <div class="field">
+        <label for="campo-introducao">Conteúdo do post</label>
+        <textarea id="campo-introducao" name="introducao" required style="min-height: 260px" placeholder="## Um subtítulo&#10;&#10;Um parágrafo normal aqui.&#10;&#10;**negrito**, *itálico*, e listas com &#10;- item 1&#10;- item 2"></textarea>
+        <small>Aceita <strong>Markdown</strong>: <code># título</code>, <code>## subtítulo</code>, <code>**negrito**</code>, <code>*itálico*</code>, <code>- item</code> pra listas, e deixe uma linha em branco entre parágrafos.</small>
+      </div>
+
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 1rem">
+        <div class="field">
+          <label for="campo-data">Data</label>
+          <input type="date" id="campo-data" name="data" />
+        </div>
+        <div class="field">
+          <label for="campo-autoria">Autoria</label>
+          <select id="campo-autoria" name="autoria">
+            <option value="Ambas">Ambas</option>
+            <option value="Maria Eduarda">Maria Eduarda</option>
+            <option value="Júlia">Júlia</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="campo-categoria">Categoria / Projeto</label>
+        <input type="text" id="campo-categoria" name="categoria" list="lista-categorias" placeholder="ex: Projeto 1, Podcast, Vídeo..." />
+        <datalist id="lista-categorias"></datalist>
+        <small>Digite um nome livre. Ele vira automaticamente uma aba de filtro na página inicial e em Posts.</small>
+      </div>
+
+      <div class="field">
+        <label for="campo-capa">Imagem de capa (URL)</label>
+        <input type="url" id="campo-capa" name="capa" placeholder="https://..." />
+      </div>
+
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 1rem">
+        <div class="field">
+          <label for="campo-video1">Vídeo 1 (link do YouTube)</label>
+          <input type="url" id="campo-video1" name="video1" placeholder="https://youtube.com/watch?v=..." />
+        </div>
+        <div class="field">
+          <label for="campo-video2">Vídeo 2 (link do YouTube)</label>
+          <input type="url" id="campo-video2" name="video2" placeholder="https://youtube.com/watch?v=..." />
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Links por eixo</label>
+        <small>Crie um grupo pra cada eixo que esse post tocar (ex: só "Multimídia", ou "Mídia" + "Hipermídia" — o que fizer sentido). Só aparecem no post os grupos que você criar aqui.</small>
+        <div id="grupos-links"></div>
+        <button type="button" id="btn-add-grupo" class="btn btn-outline" style="margin-top: 0.5rem">+ Adicionar grupo de links</button>
+      </div>
+
+      <div class="field">
+        <label for="campo-imagens">Imagens (uma URL por linha)</label>
+        <textarea id="campo-imagens" placeholder="https://.../foto1.jpg&#10;https://.../foto2.jpg"></textarea>
+      </div>
+
+      <div class="field">
+        <label for="campo-audio">Áudio / Podcast</label>
+        <input type="text" id="campo-audio" name="audio" placeholder="https://.../episodio.mp3" />
+        <small>Cole um link direto de um arquivo de áudio, ou envie um arquivo do seu computador abaixo (ex: baixado do NotebookLM):</small>
+        <div style="margin-top:0.5rem; display:flex; align-items:center; gap:0.75rem">
+          <input type="file" id="campo-audio-arquivo" accept=".mp3,.wav,.ogg,.m4a" />
+          <span id="status-upload-audio" style="font-size:0.85rem; color:#7a84a8"></span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="campo-fontes">Fontes (tipografias usadas no projeto)</label>
+        <input type="text" id="campo-fontes" name="fontes" placeholder="ex: Baloo 2, Poppins" />
+      </div>
+
+      <div class="field">
+        <label for="campo-referencias">Referências (de onde vieram as informações e imagens)</label>
+        <textarea id="campo-referencias" name="referencias" required placeholder="Coloque uma referência por linha, ex:&#10;https://site1.com&#10;https://site2.com"></textarea>
+        <small>Aperte Enter para colocar cada link/referência numa linha separada — assim fica organizado no post.</small>
+      </div>
+
+      <button type="submit" class="btn btn-primary">Salvar post</button>
+    </form>
+  </section>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/admin.js"></script>
+  <script>
+    // mostra/esconde o botão "Sair" conforme login
+    (async () => {
+      const { autenticado } = await api("/api/auth/status");
+      document.getElementById("btn-sair").style.display = autenticado ? "inline-flex" : "none";
+    })();
+    document.getElementById("btn-sair").addEventListener("click", () => {
+      setTimeout(() => (document.getElementById("btn-sair").style.display = "none"), 100);
+    });
+  </script>
+</body>
+</html>
