@@ -9,34 +9,36 @@ const { Pool } = require("pg");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// ---------- Pasta de uploads (áudios, imagens enviados pela área restrita) ----------
-const PASTA_UPLOADS = path.join(__dirname, "public", "uploads");
-fs.mkdirSync(PASTA_UPLOADS, { recursive: true });
+// ---------- Configuração do Cloudinary ----------
+const cloudinary = require("cloudinary").v2;
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, PASTA_UPLOADS),
-  filename: (req, file, cb) => {
-    const sufixo = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    const ext = path.extname(file.originalname).toLowerCase();
-    cb(null, `${sufixo}${ext}`);
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
+});
+
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: "blog_multimidia_uploads", 
+    resource_type: "auto", 
+    allowed_formats: ["jpg", "jpeg", "png", "gif", "webp", "mp3", "wav", "ogg", "m4a", "mp4"]
   },
 });
 
 const upload = multer({
-  storage,
-  limits: { fileSize: 25 * 1024 * 1024 }, // 25MB
-  fileFilter: (req, file, cb) => {
-    const permitidos = /\.(mp3|wav|ogg|m4a|jpg|jpeg|png|gif|webp)$/i;
-    if (!permitidos.test(file.originalname)) {
-      return cb(new Error("Tipo de arquivo não permitido."));
-    }
-    cb(null, true);
-  },
+  storage: storage,
+  limits: { fileSize: 25 * 1024 * 1024 }, 
 });
 
 // ---------- Banco de dados ----------
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false
+  }
 });
 
 // ---------- Middlewares ----------
@@ -91,7 +93,7 @@ app.post("/api/upload", exigirAutenticacao, (req, res) => {
     if (!req.file) {
       return res.status(400).json({ erro: "Nenhum arquivo enviado." });
     }
-    res.json({ ok: true, url: `/uploads/${req.file.filename}` });
+    res.json({ ok: true, url: req.file.path });
   });
 });
 
